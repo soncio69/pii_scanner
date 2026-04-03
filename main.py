@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""
+PII Scanner for Oracle Databases
+Usage: python main.py --excel credentials.xlsx --host dbserver --port 1521
+
+Optional:
+  --no-llm        Skip LLM-based detection
+  --no-pattern    Skip pattern-based detection
+  --output        Output file (default: pii_report.xlsx)
+"""
+
+import argparse
+import sys
+from src.scanner import Scanner, ScanConfig
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Scan Oracle schemas for PII columns")
+    parser.add_argument("--excel", required=True, help="Excel file with credentials")
+    parser.add_argument("--host", required=True, help="Oracle server hostname")
+    parser.add_argument("--port", type=int, default=1521, help="Oracle port (default: 1521)")
+    parser.add_argument("--no-llm", action="store_true", help="Skip LLM detection")
+    parser.add_argument("--no-pattern", action="store_true", help="Skip pattern detection")
+    parser.add_argument("--output", default="pii_report.xlsx", help="Output file (Excel)")
+
+    args = parser.parse_args()
+
+    config = ScanConfig(
+        host=args.host,
+        port=args.port,
+        excel_path=args.excel,
+        use_llm=not args.no_llm,
+        use_pattern=not args.no_pattern
+    )
+
+    print(f"""
+PII Scanner Configuration:
+  Excel:     {args.excel}
+  Host:      {args.host}:{args.port}
+  LLM:       {'enabled' if config.use_llm else 'disabled'}
+  Pattern:   {'enabled' if config.use_pattern else 'disabled'}
+  Output:    {args.output}
+""")
+
+    scanner = Scanner(config)
+    results = scanner.scan()
+
+    # Count summary
+    import pandas as pd
+    df = pd.DataFrame([
+        {
+            "SCHEMA": r.schema,
+            "TABLE": r.table,
+            "COLUMN": r.column,
+            "IS_PII": "Y" if r.is_pii else "N"
+        }
+        for r in results
+    ])
+
+    total = len(df)
+    pii_count = (df["IS_PII"] == "Y").sum()
+    schema_count = df["SCHEMA"].nunique()
+    table_count = df["TABLE"].nunique()
+
+    print(f"\n=== Summary ===")
+    print(f"Schemas scanned:     {schema_count}")
+    print(f"Tables scanned:      {table_count}")
+    print(f"Total columns:       {total}")
+    print(f"Columns with PII:    {pii_count}")
+    print(f"Columns without PII: {total - pii_count}")
+
+    # PII by type (if we have this data)
+    if pii_count > 0:
+        print(f"\nPII columns found: {pii_count}")
+
+    scanner.save_report(args.output)
+
+
+if __name__ == "__main__":
+    main()

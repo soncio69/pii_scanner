@@ -1,0 +1,272 @@
+# Italian/English column name patterns for banking PII
+pii_columns:
+  # ============ Personal Identity ============
+  codice_fiscale:
+    - cod_fiscale
+    - codice_fiscale
+    - cf
+    - tax_code
+    - taxcode
+    - codice_identificativo
+
+  partita_iva:
+    - piva
+    - partita_iva
+    - partitaiva
+    - vat
+    - vat_number
+
+  nome:
+    - nome
+    - first_name
+    - nome_cliente
+    - nome_cliente
+    - firstname
+
+  cognome:
+    - cognome
+    - last_name
+    - surname
+    - lastname
+
+  nome_completo:
+    - nome_completo
+    - full_name
+    - denominazione
+    - ragione_sociale
+    - fullname
+    - anagrafica
+    - anagrafica_cliente
+
+  # ============ Contact ============
+  indirizzo:
+    - indirizzo
+    - address
+    - residenza
+    - domicile
+    - via
+    - street
+    - indirizzo_residenza
+    - indirizzo_domicilio
+    - indirizzo_comunicazione
+
+  città:
+    - città
+    - city
+    - comune
+    - localita
+
+  cap:
+    - cap
+    - postal_code
+    - codice_postale
+
+  telefono:
+    - telefono
+    - tel
+    - phone
+    - mobile
+    - cellulare
+    - recapito
+    - recapito_telefonico
+
+  email:
+    - email
+    - email_cliente
+    - pec
+    - mail
+    - e_mail
+    - email_certificata
+
+  # ============ Demographics ============
+  data_nascita:
+    - data_nascita
+    - dt_nascita
+    - birth_date
+    - birthdate
+    - dt_natalizio
+    - data_di_nascita
+
+  sesso:
+    - sesso
+    - gender
+    - genere
+
+  luogo_nascita:
+    - luogo_nascita
+    - place_of_birth
+    - comune_nascita
+
+  # ============ Documents ============
+  documento_identità:
+    - documento
+    - doc_identita
+    - id_document
+    - identity_doc
+    - carta_identita
+    - passaporto
+    - numero_documento
+    - tipo_documento
+    - rilasciato_da
+    - data_scadenza_doc
+    - data_rilascio_doc
+
+  # ============ Banking IDs (CRITICAL) ============
+  # NDG - Numero Delivered Globally / Customer ID
+  ndg:
+    - ndg
+    - n_dg
+    - numero_delivered
+    - id_cliente
+    - id_anagrafica
+    - id_persona
+    - cliente_id
+    - codice_cliente
+    - codice_anagrafica
+
+  # RAPPORTO - Bank account/relationship ID
+  rapporto:
+    - rapporto
+    - num_rapporto
+    - numero_rapporto
+    - id_rapporto
+    - account_id
+    - account_number
+    - id_conto
+    - numero_conto
+    - numero_cc
+    - reference
+    - riferimento
+
+  # ABI - Bank code
+  abi:
+    - abi
+    - codice_abi
+    - bank_code
+
+  # CAB - Branch code
+  cab:
+    - cab
+    - codice_cab
+    - branch_code
+    - agenzia
+    - codice_agenzia
+
+  # ============ Account Numbers ============
+  iban:
+    - iban
+    - coord_bancarie
+    - coordinate_bancarie
+    - bank_account
+    - account_iban
+
+  conto_corrente:
+    - conto_corrente
+    - cc
+    - conto
+    - current_account
+
+  # ============ Cards ============
+  carta_di_credito:
+    - carta_credito
+    - carta_di_credito
+    - credit_card
+    - cc_number
+    - num_carta
+
+  bancomat:
+    - bancomat
+    - carta_bancomat
+    - carta_atm
+    - card_number
+    - num_carta_atm
+
+  # ============ Financial ============
+  iban:
+    - iban
+    - coord_bancarie
+    - coordinate_bancarie
+    - bank_account
+    - account_iban
+    - coordinate_iban
+
+  bic_swift:
+    - bic
+    - swift
+    - swift_code
+    - bic_code
+
+  # ============ Contract/Policy ============
+  numero_polizza:
+    - polizza
+    - num_polizza
+    - numero_polizza
+    - policy_number
+    - policy_id
+
+  numero_contratto:
+    - contratto
+    - num_contratto
+    - numero_contratto
+    - contract_number
+
+  # ============ Description/Anagrafica fields ============
+  # These often contain customer names/identifiers
+  descrizione:
+    - descrizione
+    - descr
+    - description
+    - des
+    - note
+
+  anagrafica:
+    - anagrafica
+    - anag
+    - dati_anagrafi
+    - dati_persona
+    - dati_cliente
+
+  nominativo:
+    - nominativo
+    - nome_nominativo
+    - intestatario
+
+  # ============ Additional identifiers ============
+  id_univoco:
+    - id_univoco
+    - uid
+    - uuid
+    - unique_id
+    - id
+
+  codice:
+    - codice
+    - cod
+    - code
+    - cod_id
+
+  # ============ Corporate/Sole Trader ============
+  partita_iva:
+    - piva
+    - partita_iva
+    - partitaiva
+    - vat
+    - vat_number
+    - codice_iva
+
+  codice_rea:
+    - rea
+    - codice_rea
+    - numero_rea
+    - rea_number
+
+  # ============ Foreign identifiers ============
+  passport_number:
+    - passaporto
+    - passport
+    - passport_number
+
+  nif:
+    - nif
+    - numero_identificazione_fiscale
+    - tax_id

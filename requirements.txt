@@ -1,0 +1,6 @@
+oracledb
+pandas
+openpyxl
+pyyaml
+requests
+tqdm
