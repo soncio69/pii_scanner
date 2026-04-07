@@ -19,11 +19,9 @@ class OracleConnector:
         """Create connection pool for efficiency"""
         if self._pool is None:
             # Check if pool already exists (from previous run) and close it first
-            try:
-                existing_pool = oracledb.get_pool(self.pool_alias)
+            existing_pool = oracledb.get_pool(self.pool_alias)
+            if existing_pool is not None:
                 existing_pool.close()
-            except oracledb.Error:
-                pass  # Pool doesn't exist, which is fine
 
             self._pool = oracledb.create_pool(
                 user=self.user,
