@@ -197,7 +197,14 @@ class PatternDetector:
                 continue
 
             # Convert all to string for pattern matching
-            str_values = [str(v).strip() for v in values if v]
+            def to_str(v):
+                if v is None:
+                    return ""
+                if isinstance(v, bytes):
+                    return v.decode('utf-8', errors='ignore')
+                return str(v)
+
+            str_values = [to_str(v).strip() for v in values if v]
 
             # Check against each PII pattern
             for pii_pattern in PII_PATTERNS:
