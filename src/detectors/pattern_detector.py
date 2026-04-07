@@ -200,9 +200,15 @@ class PatternDetector:
             def to_str(v):
                 if v is None:
                     return ""
-                if isinstance(v, bytes):
-                    return v.decode('utf-8', errors='ignore')
-                return str(v)
+                # Some Oracle types return bytes from __str__
+                try:
+                    result = str(v)
+                    if isinstance(result, bytes):
+                        return result.decode('utf-8', errors='ignore')
+                    return result
+                except TypeError:
+                    # Fallback for stubborn cases
+                    return repr(v)
 
             str_values = [to_str(v).strip() for v in values if v]
 
