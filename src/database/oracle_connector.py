@@ -7,16 +7,24 @@ logger = logging.getLogger(__name__)
 
 
 class OracleConnector:
-    def __init__(self, user: str, password: str, dsn: str, pool_alias: str = "default"):
+    def __init__(self, user: str, password: str, dsn: str, pool_alias: str = None):
         self.user = user
         self.password = password
         self.dsn = dsn
-        self.pool_alias = pool_alias
+        # Use unique pool alias per user to avoid conflicts
+        self.pool_alias = pool_alias or f"pool_{user.lower()}"
         self._pool = None
 
     def _create_pool(self):
         """Create connection pool for efficiency"""
         if self._pool is None:
+            # Check if pool already exists (from previous run) and close it first
+            try:
+                existing_pool = oracledb.get_pool(self.pool_alias)
+                existing_pool.close()
+            except oracledb.Error:
+                pass  # Pool doesn't exist, which is fine
+
             self._pool = oracledb.create_pool(
                 user=self.user,
                 password=self.password,

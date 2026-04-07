@@ -154,7 +154,7 @@ class OllamaDetector:
             return matches
 
         except Exception as e:
-            print(f"LLM detection error for {owner}.{table_name}: {e}")
+            print(f"LLM detection error for {owner}.{table_name}: {str(e)}")
             return []
 
     def _parse_llm_response(self, text: str) -> List[PiiMatch]:
@@ -182,7 +182,7 @@ class OllamaDetector:
             return matches
 
         except (json.JSONDecodeError, KeyError) as e:
-            print(f"Failed to parse LLM response: {e}")
+            print(f"Failed to parse LLM response: {str(e)}")
             return []
 
 

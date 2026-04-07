@@ -150,7 +150,7 @@ class MetadataFetcher:
 
             return [dict(zip(columns, row)) for row in rows]
         except oracledb.Error as e:
-            logger.warning(f"Cannot sample {owner}.{table_name}: {e}")
+            logger.warning(f"Cannot sample {owner}.{table_name}: {str(e)}")
             return []
         finally:
             cursor.close()

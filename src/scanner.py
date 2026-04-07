@@ -73,10 +73,9 @@ class Scanner:
         pii_columns: Set[tuple] = set()
 
         dsn = build_dsn(host, port, service_name)
+        connector = OracleConnector(user, password, dsn)
 
         try:
-            connector = OracleConnector(user, password, dsn)
-
             with connector.get_connection() as conn:
                 fetcher = MetadataFetcher(conn)
                 detector = HybridDetector(
@@ -107,12 +106,12 @@ class Scanner:
                     for finding in table_findings:
                         pii_columns.add((user.upper(), table.name, finding.column))
 
-            connector.close()
-
         except oracledb.Error as e:
-            logger.error(f"Error scanning schema {user}: {e}")
+            logger.error(f"Error scanning schema {user}: {str(e)}")
         except Exception as e:
-            logger.error(f"Unexpected error for {user}: {e}")
+            logger.error(f"Unexpected error for {user}: {str(e)}")
+        finally:
+            connector.close()
 
         # Update is_pii for found columns
         for result in results:
