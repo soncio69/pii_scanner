@@ -49,6 +49,10 @@ PII Scanner Configuration:
     scanner = Scanner(config)
     results = scanner.scan()
 
+    if not results:
+        print("\nNo results to save")
+        return
+
     # Count summary
     import pandas as pd
     df = pd.DataFrame([

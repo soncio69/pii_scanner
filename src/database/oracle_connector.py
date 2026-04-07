@@ -46,8 +46,12 @@ class OracleConnector:
             pool.release(conn)
 
     def close(self):
-        if self._pool:
-            self._pool.close()
+        try:
+            if self._pool:
+                self._pool.close()
+        except Exception:
+            pass  # Ignore close errors
+        finally:
             self._pool = None
 
     def __enter__(self):
