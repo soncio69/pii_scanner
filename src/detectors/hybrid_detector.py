@@ -7,6 +7,7 @@ from src.detectors.llm_detector import OllamaDetector
 
 
 # Numeric types in Oracle
+# Used to identify numeric ID columns that should be excluded from PII
 NUMERIC_TYPES = {'NUMBER', 'INTEGER', 'INT', 'SMALLINT', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'FLOAT'}
 
 
@@ -111,10 +112,20 @@ class HybridDetector:
         return findings
 
     def _filter_id_columns(self, findings: List[PiiFinding], table: TableInfo) -> List[PiiFinding]:
-        """Exclude columns that contain ID, are numeric, and are PK/FK"""
+        """
+        Exclude columns that contain ID, are numeric, and are PK/FK.
+
+        Business rule: Numeric ID columns that serve as primary or foreign keys
+        should not be flagged as PII, as they are just technical identifiers.
+
+        Exclusion criteria (ALL must match):
+        - Column name contains "ID" (e.g., USER_ID, CUSTOMER_ID)
+        - Column data type is numeric (NUMBER, INTEGER, etc.)
+        - Column is part of a primary key or foreign key constraint
+        """
         pk_fk_columns = table.pk_fk_columns or set()
 
-        # Get column info map
+        # Get column info map for quick lookup
         col_info = {c.name: c for c in table.columns}
 
         filtered = []
@@ -122,10 +133,7 @@ class HybridDetector:
             col_name = f.column.upper()
             col = col_info.get(f.column)
 
-            # Check if should be excluded:
-            # - Column name contains "ID"
-            # - Column is numeric
-            # - Column is PK or FK
+            # Check if should be excluded based on all criteria
             should_exclude = (
                 "ID" in col_name and
                 col is not None and

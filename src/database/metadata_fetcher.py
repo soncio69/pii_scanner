@@ -136,6 +136,7 @@ class MetadataFetcher:
         cursor.close()
 
         # Get PK/FK columns and add to tables
+        # This is needed to filter out numeric ID columns that are keys
         pk_fk_columns = self._get_pk_fk_columns(owner)
         for table in tables.values():
             table.pk_fk_columns = pk_fk_columns.get(table.name, set())
@@ -143,7 +144,12 @@ class MetadataFetcher:
         return list(tables.values())
 
     def _get_pk_fk_columns(self, owner: str) -> dict:
-        """Get columns that are part of primary or foreign keys"""
+        """
+        Get columns that are part of primary or foreign keys.
+
+        Returns:
+            Dict mapping table_name -> set of column names that are PK or FK
+        """
         cursor = self.conn.cursor()
 
         # Get primary key columns
