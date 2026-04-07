@@ -59,6 +59,7 @@ PII Scanner Configuration:
             "SCHEMA": r.schema,
             "TABLE": r.table,
             "COLUMN": r.column,
+            "DATA_TYPE": r.data_type,
             "IS_PII": "Y" if r.is_pii else "N"
         }
         for r in results

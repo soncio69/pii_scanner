@@ -30,6 +30,7 @@ class ColumnResult:
     schema: str
     table: str
     column: str
+    data_type: str  # e.g., "VARCHAR2(100)", "NUMBER", "DATE"
     is_pii: bool
 
 
@@ -92,10 +93,17 @@ class Scanner:
                 for table in tables:
                     # First, mark all columns as NOT_PII
                     for col in table.columns:
+                        # Format data type with length for varchar2
+                        if col.data_type.upper() in ('VARCHAR2', 'CHAR', 'NVARCHAR2', 'NCHAR'):
+                            dtype = f"{col.data_type}({col.data_length})"
+                        else:
+                            dtype = col.data_type
+
                         results.append(ColumnResult(
                             schema=user.upper(),
                             table=table.name,
                             column=col.name,
+                            data_type=dtype,
                             is_pii=False
                         ))
 
@@ -132,13 +140,14 @@ class Scanner:
                 "SCHEMA": r.schema,
                 "TABLE": r.table,
                 "COLUMN": r.column,
+                "DATA_TYPE": r.data_type,
                 "IS_PII": "Y" if r.is_pii else "N"
             }
             for r in self.results
         ])
 
         # Ensure correct column order
-        df = df[["SCHEMA", "TABLE", "COLUMN", "IS_PII"]]
+        df = df[["SCHEMA", "TABLE", "COLUMN", "DATA_TYPE", "IS_PII"]]
 
         # Save to Excel
         if output_path.endswith(".xlsx"):
