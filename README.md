@@ -44,6 +44,14 @@ python main.py --excel credenziali.xlsx --host dbserver --port 1521 --no-llm
 python main.py --excel credenziali.xlsx --host dbserver --port 1521 --no-pattern
 ```
 
+### Specify Oracle Service Name
+
+```bash
+python main.py --excel credenziali.xlsx --host dbserver --port 1521 --service ORCL
+```
+
+This overrides the SERVICE_NAME column in the Excel file. Useful when all schemas use the same service.
+
 ### Command Line Options
 
 | Option | Description | Default |
@@ -51,6 +59,7 @@ python main.py --excel credenziali.xlsx --host dbserver --port 1521 --no-pattern
 | `--excel` | Excel file with credentials (required) | - |
 | `--host` | Oracle server hostname (required) | - |
 | `--port` | Oracle port | 1521 |
+| `--service` | Oracle service name (overrides SERVICE_NAME in Excel) | - |
 | `--no-llm` | Skip LLM-based detection | false |
 | `--no-pattern` | Skip pattern-based detection | false |
 | `--output` | Output Excel file | pii_report.xlsx |

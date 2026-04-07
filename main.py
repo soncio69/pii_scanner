@@ -17,8 +17,9 @@ from src.scanner import Scanner, ScanConfig
 def main():
     parser = argparse.ArgumentParser(description="Scan Oracle schemas for PII columns")
     parser.add_argument("--excel", required=True, help="Excel file with credentials")
-    parser.add_argument("--host", required=True, help="Oracle server hostname")
+    parser.add_argument("--host", required=True, help="Oracle server hostname (or use host:port:service format)")
     parser.add_argument("--port", type=int, default=1521, help="Oracle port (default: 1521)")
+    parser.add_argument("--service", help="Oracle service name (overrides SERVICE_NAME in Excel)")
     parser.add_argument("--no-llm", action="store_true", help="Skip LLM detection")
     parser.add_argument("--no-pattern", action="store_true", help="Skip pattern detection")
     parser.add_argument("--output", default="pii_report.xlsx", help="Output file (Excel)")
@@ -28,15 +29,18 @@ def main():
     config = ScanConfig(
         host=args.host,
         port=args.port,
+        service=args.service,
         excel_path=args.excel,
         use_llm=not args.no_llm,
         use_pattern=not args.no_pattern
     )
 
+    service_display = args.service if args.service else "(from Excel)"
     print(f"""
 PII Scanner Configuration:
   Excel:     {args.excel}
   Host:      {args.host}:{args.port}
+  Service:   {service_display}
   LLM:       {'enabled' if config.use_llm else 'disabled'}
   Pattern:   {'enabled' if config.use_pattern else 'disabled'}
   Output:    {args.output}

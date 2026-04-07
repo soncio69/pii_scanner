@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 class ScanConfig:
     host: str
     port: int
-    excel_path: str
+    service: str = None
+    excel_path: str = None
     use_llm: bool = True
     use_pattern: bool = True
     sample_size: int = 20
@@ -46,12 +47,14 @@ class Scanner:
         logger.info(f"Loaded {len(credentials)} credentials from Excel")
 
         for cred in tqdm(credentials, desc="Scanning schemas"):
+            # Use global service from config if provided, otherwise use per-credential service
+            service_name = self.config.service or cred["service_name"]
             schema_results = self._scan_schema(
                 host=self.config.host,
                 port=self.config.port,
                 user=cred["user"],
                 password=cred["password"],
-                service_name=cred["service_name"]
+                service_name=service_name
             )
             self.results.extend(schema_results)
 
