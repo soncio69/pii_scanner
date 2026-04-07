@@ -19,6 +19,11 @@ class TableInfo:
     name: str
     owner: str
     columns: List[ColumnInfo]
+    pk_fk_columns: set = None
+
+    def __post_init__(self):
+        if self.pk_fk_columns is None:
+            self.pk_fk_columns = set()
 
 
 class MetadataFetcher:
@@ -129,7 +134,58 @@ class MetadataFetcher:
             ))
 
         cursor.close()
+
+        # Get PK/FK columns and add to tables
+        pk_fk_columns = self._get_pk_fk_columns(owner)
+        for table in tables.values():
+            table.pk_fk_columns = pk_fk_columns.get(table.name, set())
+
         return list(tables.values())
+
+    def _get_pk_fk_columns(self, owner: str) -> dict:
+        """Get columns that are part of primary or foreign keys"""
+        cursor = self.conn.cursor()
+
+        # Get primary key columns
+        pk_query = """
+            SELECT ac.table_name, acc.column_name
+            FROM all_constraints ac
+            JOIN all_cons_columns acc
+                ON ac.owner = acc.owner AND ac.constraint_name = acc.constraint_name
+            WHERE ac.owner = :owner
+                AND ac.constraint_type = 'P'
+        """
+
+        # Get foreign key columns
+        fk_query = """
+            SELECT ac.table_name, acc.column_name
+            FROM all_constraints ac
+            JOIN all_cons_columns acc
+                ON ac.owner = acc.owner AND ac.constraint_name = acc.constraint_name
+            WHERE ac.owner = :owner
+                AND ac.constraint_type = 'R'
+        """
+
+        result = {}
+
+        try:
+            cursor.execute(pk_query, {"owner": owner.upper()})
+            for table_name, col_name in cursor.fetchall():
+                if table_name not in result:
+                    result[table_name] = set()
+                result[table_name].add(col_name)
+
+            cursor.execute(fk_query, {"owner": owner.upper()})
+            for table_name, col_name in cursor.fetchall():
+                if table_name not in result:
+                    result[table_name] = set()
+                result[table_name].add(col_name)
+        except oracledb.Error as e:
+            logger.warning(f"Cannot get PK/FK columns: {str(e)}")
+        finally:
+            cursor.close()
+
+        return result
 
     def sample_rows(self, owner: str, table_name: str, limit: int = 10) -> List[dict]:
         """Sample random rows from a table for LLM analysis"""

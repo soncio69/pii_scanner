@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 from typing import List
-from src.database.metadata_fetcher import MetadataFetcher, TableInfo
+from src.database.metadata_fetcher import MetadataFetcher, TableInfo, ColumnInfo
 from src.detectors.name_detector import NameDetector, PiiMatch as NameMatch
 from src.detectors.pattern_detector import PatternDetector, PiiMatch as PatternMatch
 from src.detectors.llm_detector import OllamaDetector
+
+
+# Numeric types in Oracle
+NUMERIC_TYPES = {'NUMBER', 'INTEGER', 'INT', 'SMALLINT', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'FLOAT'}
 
 
 @dataclass
@@ -101,7 +105,38 @@ class HybridDetector:
                         source="llm"
                     ))
 
+        # Filter out ID columns that are numeric and PK/FK
+        findings = self._filter_id_columns(findings, table)
+
         return findings
+
+    def _filter_id_columns(self, findings: List[PiiFinding], table: TableInfo) -> List[PiiFinding]:
+        """Exclude columns that contain ID, are numeric, and are PK/FK"""
+        pk_fk_columns = table.pk_fk_columns or set()
+
+        # Get column info map
+        col_info = {c.name: c for c in table.columns}
+
+        filtered = []
+        for f in findings:
+            col_name = f.column.upper()
+            col = col_info.get(f.column)
+
+            # Check if should be excluded:
+            # - Column name contains "ID"
+            # - Column is numeric
+            # - Column is PK or FK
+            should_exclude = (
+                "ID" in col_name and
+                col is not None and
+                col.data_type.upper() in NUMERIC_TYPES and
+                col_name in pk_fk_columns
+            )
+
+            if not should_exclude:
+                filtered.append(f)
+
+        return filtered
 
 
 if __name__ == "__main__":
