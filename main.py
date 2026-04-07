@@ -35,12 +35,11 @@ def main():
         use_pattern=not args.no_pattern
     )
 
-    service_display = args.service if args.service else "(from Excel)"
     print(f"""
 PII Scanner Configuration:
   Excel:     {args.excel}
   Host:      {args.host}:{args.port}
-  Service:   {service_display}
+  Service:   {args.service}
   LLM:       {'enabled' if config.use_llm else 'disabled'}
   Pattern:   {'enabled' if config.use_pattern else 'disabled'}
   Output:    {args.output}
