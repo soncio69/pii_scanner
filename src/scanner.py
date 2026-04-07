@@ -107,9 +107,9 @@ class Scanner:
                         pii_columns.add((user.upper(), table.name, finding.column))
 
         except oracledb.Error as e:
-            logger.error(f"Error scanning schema {user}: {str(e)}")
+            logger.error(f"Error scanning schema {user}: {str(e)}", exc_info=True)
         except Exception as e:
-            logger.error(f"Unexpected error for {user}: {str(e)}")
+            logger.error(f"Unexpected error for {user}: {str(e)}", exc_info=True)
         finally:
             connector.close()
 
