@@ -93,7 +93,11 @@ class OllamaDetector:
         if value is None:
             return "NULL"
 
-        s = str(value).strip()
+        if isinstance(value, bytes):
+            s = value.decode('utf-8', errors='ignore').strip()
+        else:
+            s = str(value).strip()
+
         if len(s) <= max_len:
             return s[:max_len]
         return s[:max_len] + "..."
