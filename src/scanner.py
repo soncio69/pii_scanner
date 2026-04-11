@@ -10,8 +10,21 @@ from src.database.credentials import load_credentials
 from src.detectors.hybrid_detector import HybridDetector, PiiFinding
 
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def setup_logging(log_file: str = None, debug: bool = False):
+    """Configure logging to console and optional file"""
+    level = logging.DEBUG if debug else logging.INFO
+    handlers = [logging.StreamHandler()]
+    if log_file:
+        handlers.append(logging.FileHandler(log_file))
+
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s:%(levelname)s:%(name)s:%(message)s",
+        handlers=handlers
+    )
 
 
 @dataclass
@@ -23,6 +36,8 @@ class ScanConfig:
     use_llm: bool = True
     use_pattern: bool = True
     sample_size: int = 20
+    log_file: str = None
+    debug: bool = False
 
 
 @dataclass

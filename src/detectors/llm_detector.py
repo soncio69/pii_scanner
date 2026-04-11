@@ -1,9 +1,12 @@
 import requests
 import json
+import logging
 from dataclasses import dataclass
 from typing import List, Optional
 from src.database.metadata_fetcher import MetadataFetcher
 from src.detectors.name_detector import PiiMatch
+
+logger = logging.getLogger(__name__)
 
 
 # System prompt for PII classification - Italian banking focused
@@ -128,6 +131,8 @@ class OllamaDetector:
 
         prompt = SAMPLE_VALUES_PROMPT.format(column_samples=col_samples_str)
 
+        logger.debug(f"LLM analyzing {owner}.{table_name} - columns: {columns}")
+
         # Call Ollama
         try:
             response = requests.post(
@@ -143,13 +148,20 @@ class OllamaDetector:
             )
 
             if response.status_code != 200:
+                logger.debug(f"LLM request failed for {owner}.{table_name}: status {response.status_code}")
                 return []
 
             result = response.json()
             text = result.get("response", "")
 
+            logger.debug(f"LLM raw response for {owner}.{table_name}: {text[:500]}")
+
             # Parse JSON response
             matches = self._parse_llm_response(text)
+
+            if matches:
+                logger.debug(f"LLM PII detected in {owner}.{table_name}: "
+                           f"{[(m.column_name, m.pii_type, m.confidence) for m in matches]}")
 
             # Add table context
             for match in matches:

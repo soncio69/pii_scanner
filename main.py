@@ -11,7 +11,7 @@ Optional:
 
 import argparse
 import sys
-from src.scanner import Scanner, ScanConfig
+from src.scanner import Scanner, ScanConfig, setup_logging
 
 
 def main():
@@ -23,6 +23,8 @@ def main():
     parser.add_argument("--no-llm", action="store_true", help="Skip LLM detection")
     parser.add_argument("--no-pattern", action="store_true", help="Skip pattern detection")
     parser.add_argument("--output", default="pii_report.xlsx", help="Output file (Excel)")
+    parser.add_argument("--log-file", default="pii_scanner.log", help="Log file (default: pii_scanner.log)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 
     args = parser.parse_args()
 
@@ -32,7 +34,9 @@ def main():
         service=args.service,
         excel_path=args.excel,
         use_llm=not args.no_llm,
-        use_pattern=not args.no_pattern
+        use_pattern=not args.no_pattern,
+        log_file=args.log_file,
+        debug=args.debug
     )
 
     print(f"""
@@ -43,8 +47,11 @@ PII Scanner Configuration:
   LLM:       {'enabled' if config.use_llm else 'disabled'}
   Pattern:   {'enabled' if config.use_pattern else 'disabled'}
   Output:    {args.output}
+  Log:       {args.log_file}
+  Debug:     {'enabled' if config.debug else 'disabled'}
 """)
 
+    setup_logging(config.log_file, config.debug)
     scanner = Scanner(config)
     results = scanner.scan()
 

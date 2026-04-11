@@ -6,6 +6,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _to_str(v):
+    """Convert bytes to string if needed"""
+    if v is None:
+        return None
+    if isinstance(v, bytes):
+        return v.decode('utf-8', errors='ignore')
+    return v
+
+
 @dataclass
 class ColumnInfo:
     name: str
@@ -56,8 +65,8 @@ class MetadataFetcher:
         tables = []
         for owner, table_name in rows:
             tables.append(TableInfo(
-                name=table_name,
-                owner=owner,
+                name=_to_str(table_name),
+                owner=_to_str(owner),
                 columns=[]
             ))
 
@@ -88,8 +97,8 @@ class MetadataFetcher:
         columns = []
         for col_name, data_type, data_length, nullable in cursor.fetchall():
             columns.append(ColumnInfo(
-                name=col_name,
-                data_type=data_type,
+                name=_to_str(col_name),
+                data_type=_to_str(data_type),
                 data_length=data_length,
                 nullable=(nullable == 'Y')
             ))
@@ -119,16 +128,17 @@ class MetadataFetcher:
 
         tables = {}
         for table_name, col_name, data_type, data_length, nullable in cursor.fetchall():
+            table_name = _to_str(table_name)
             if table_name not in tables:
                 tables[table_name] = TableInfo(
                     name=table_name,
-                    owner=owner,
+                    owner=owner.upper(),
                     columns=[]
                 )
 
             tables[table_name].columns.append(ColumnInfo(
-                name=col_name,
-                data_type=data_type,
+                name=_to_str(col_name),
+                data_type=_to_str(data_type),
                 data_length=data_length,
                 nullable=(nullable == 'Y')
             ))
