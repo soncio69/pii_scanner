@@ -26,6 +26,11 @@ class NameDetector:
         for col in columns:
             col_name_lower = col.name.lower()
 
+            # Skip VARCHAR2 columns with length <= 5 (too short for PII)
+            if col.data_type.upper() in ('VARCHAR2', 'CHAR', 'NVARCHAR2', 'NCHAR'):
+                if col.data_length is not None and col.data_length <= 5:
+                    continue
+
             # Check each PII category
             for pii_type, patterns in self.pii_columns.items():
                 for pattern in patterns:
