@@ -7,6 +7,8 @@ Optional:
   --no-llm        Skip LLM-based detection
   --no-pattern    Skip pattern-based detection
   --output        Output file (default: pii_report.xlsx)
+  --log-file      Log file path (default: pii_scanner.log)
+  --debug         Enable debug-level logging
 """
 
 import argparse

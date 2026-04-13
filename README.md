@@ -5,6 +5,7 @@ A tool that scans multiple Oracle database schemas to identify columns containin
 ## Features
 
 - **Hybrid Detection**: Combines three detection methods for comprehensive PII identification
+- **Smart Filtering**: Automatically excludes numeric PK/FK ID columns from PII detection
 - **Italian Banking Focus**: Pre-configured patterns for Italian PII types (codice fiscale, NDG, IBAN, etc.)
 - **Excel Output**: Results exported to Excel for easy review and reporting
 - **Flexible**: Enable/disable LLM and pattern detection independently
@@ -52,17 +53,27 @@ python main.py --excel credenziali.xlsx --host dbserver --port 1521 --service OR
 
 This overrides the SERVICE_NAME column in the Excel file. Useful when all schemas use the same service.
 
+### Enable Debug Logging
+
+```bash
+python main.py --excel credenziali.xlsx --host dbserver --port 1521 --debug
+```
+
+Logs are written to `pii_scanner.log` by default. Use `--log-file` to specify a different location.
+
 ### Command Line Options
 
 | Option | Description | Default |
 |--------|-------------|---------|
 | `--excel` | Excel file with credentials (required) | - |
-| `--host` | Oracle server hostname (required) | - |
-| `--port` | Oracle port | 1521 |
+| `--host` | Oracle server hostname (required, or use host:port:service format) | - |
+| `--port` | Oracle port (default: 1521) | 1521 |
 | `--service` | Oracle service name (overrides SERVICE_NAME in Excel) | - |
 | `--no-llm` | Skip LLM-based detection | false |
 | `--no-pattern` | Skip pattern-based detection | false |
 | `--output` | Output Excel file | pii_report.xlsx |
+| `--log-file` | Log file path | pii_scanner.log |
+| `--debug` | Enable debug-level logging | false |
 
 ## Credentials File Format
 
@@ -123,7 +134,12 @@ The scanner generates an Excel report with columns:
 | SCHEMA | Database schema name |
 | TABLE | Table name |
 | COLUMN | Column name |
+| DATA_TYPE | Oracle data type (e.g., VARCHAR2, NUMBER, DATE) |
 | IS_PII | Y/N indicating PII detection |
+
+### Smart Filtering
+
+The scanner automatically excludes numeric ID columns that are primary or foreign keys from PII detection. This prevents false positives on system-generated identifiers like `ID`, `ID_CLIENTE`, or `ID_CONTRATTO` that serve as database keys rather than actual PII.
 
 ## Requirements
 
