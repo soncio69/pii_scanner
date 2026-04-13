@@ -183,7 +183,7 @@ class OllamaDetector:
                     "stream": False,
                     "format": "json"
                 },
-                timeout=60
+                timeout=120
             )
 
             if response.status_code != 200:
