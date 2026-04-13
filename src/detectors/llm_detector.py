@@ -71,6 +71,16 @@ Respond ONLY with JSON array."""
 class OllamaDetector:
     """Detect PII using local LLM via Ollama"""
 
+    # Table name patterns to exclude from LLM detection
+    EXCLUDED_TABLES = {
+        'statuses', 'history', 'profiles', 'errors', 'messages', 'types',
+        'logs', 'audit', 'config', 'settings', 'parameters', 'codes',
+        'references', 'lookups', 'mapping', 'translation', 'localization',
+        'categories', 'classes', 'definitions', 'metadata', 'schema',
+        'versions', 'backup', 'archive', 'temp', 'tmp', 'cache',
+        'sequences', 'constraints', 'indexes', 'triggers', 'views'
+    }
+
     def __init__(
         self,
         metadata_fetcher: MetadataFetcher,
@@ -83,6 +93,7 @@ class OllamaDetector:
         self.model = model
         self.sample_size = sample_size
         self._available = None
+        self._excluded_tables_logged = set()  # Track logged exclusions to avoid duplicates
 
     def is_available(self) -> bool:
         """Check if Ollama is running"""
@@ -127,6 +138,15 @@ class OllamaDetector:
     def detect(self, owner: str, table_name: str) -> List[PiiMatch]:
         """Detect PII using LLM analysis of sample data"""
         if not self.is_available():
+            return []
+
+        # Check if table should be excluded from LLM detection
+        table_name_lower = table_name.lower().strip()
+        if table_name_lower in self.EXCLUDED_TABLES:
+            # Log only once per table to avoid spam
+            if table_name_lower not in self._excluded_tables_logged:
+                logger.info(f"Excluding table {owner}.{table_name} from LLM detection (system table)")
+                self._excluded_tables_logged.add(table_name_lower)
             return []
 
         # Get samples
