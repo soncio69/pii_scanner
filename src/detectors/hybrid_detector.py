@@ -3,7 +3,7 @@ from typing import List
 from src.database.metadata_fetcher import MetadataFetcher, TableInfo, ColumnInfo
 from src.detectors.name_detector import NameDetector, PiiMatch as NameMatch
 from src.detectors.pattern_detector import PatternDetector, PiiMatch as PatternMatch
-from src.detectors.llm_detector import OllamaDetector
+from src.detectors.llm_detector import OllamaDetector, OllamaConnectionError
 
 
 # Numeric types in Oracle
@@ -35,6 +35,11 @@ class HybridDetector:
         self.pattern_detector = PatternDetector(metadata_fetcher)
         self.ollama_detector = OllamaDetector(metadata_fetcher) if use_llm else None
         self.use_pattern = use_pattern
+
+    def verify_ollama(self):
+        """Verify Ollama connection when LLM is enabled"""
+        if self.ollama_detector is not None:
+            self.ollama_detector.is_available()
 
     def detect(self, schema: str, table: TableInfo) -> List[PiiFinding]:
         """Run all detectors and combine results"""

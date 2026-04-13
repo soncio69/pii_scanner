@@ -1,12 +1,18 @@
 import requests
 import json
 import logging
+import sys
 from dataclasses import dataclass
 from typing import List, Optional
 from src.database.metadata_fetcher import MetadataFetcher
 from src.detectors.name_detector import PiiMatch
 
 logger = logging.getLogger(__name__)
+
+
+class OllamaConnectionError(Exception):
+    """Raised when unable to connect to Ollama"""
+    pass
 
 
 # System prompt for PII classification - Italian banking focused
@@ -85,9 +91,16 @@ class OllamaDetector:
 
         try:
             response = requests.get(f"{self.ollama_url}/api/tags", timeout=5)
-            self._available = response.status_code == 200
-        except requests.RequestException:
-            self._available = False
+            if response.status_code != 200:
+                raise OllamaConnectionError(
+                    f"Ollama returned status code {response.status_code}"
+                )
+            self._available = True
+        except requests.RequestException as e:
+            error_msg = f"Failed to connect to Ollama at {self.ollama_url}: {str(e)}"
+            logger.error(error_msg)
+            print(f"ERROR: {error_msg}", file=sys.stderr)
+            raise OllamaConnectionError(error_msg)
 
         return self._available
 

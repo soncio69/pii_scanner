@@ -8,6 +8,7 @@ from src.database.oracle_connector import OracleConnector, build_dsn
 from src.database.metadata_fetcher import MetadataFetcher
 from src.database.credentials import load_credentials
 from src.detectors.hybrid_detector import HybridDetector, PiiFinding
+from src.detectors.llm_detector import OllamaConnectionError
 
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,10 @@ class Scanner:
                     use_llm=self.config.use_llm,
                     use_pattern=self.config.use_pattern
                 )
+
+                # Verify Ollama connection when LLM is enabled
+                if self.config.use_llm:
+                    detector.verify_ollama()
 
                 # Get all tables with columns (efficient)
                 tables = fetcher.get_all_tables_with_columns(owner=user.upper())

@@ -13,7 +13,11 @@ Optional:
 
 import argparse
 import sys
+import logging
 from src.scanner import Scanner, ScanConfig, setup_logging
+from src.detectors.llm_detector import OllamaConnectionError
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -55,7 +59,13 @@ PII Scanner Configuration:
 
     setup_logging(config.log_file, config.debug)
     scanner = Scanner(config)
-    results = scanner.scan()
+
+    try:
+        results = scanner.scan()
+    except OllamaConnectionError as e:
+        logger.error(str(e))
+        print(f"\nERROR: Failed to connect to Ollama. {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
     if not results:
         print("\nNo results to save")
