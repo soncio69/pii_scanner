@@ -109,10 +109,16 @@ class OllamaDetector:
         if value is None:
             return "NULL"
 
+        # Handle bytes directly
         if isinstance(value, bytes):
             s = value.decode('utf-8', errors='ignore').strip()
         else:
-            s = str(value).strip()
+            # Handle values with broken __str__ or other edge cases
+            try:
+                s = str(value).strip()
+            except TypeError:
+                # Fallback for values where __str__ returns non-string
+                s = repr(value).strip()
 
         if len(s) <= max_len:
             return s[:max_len]
