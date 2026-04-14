@@ -55,11 +55,24 @@ pii_columns:
     - city
     - comune
     - localita
+    - locality
 
   cap:
     - cap
     - postal_code
     - codice_postale
+
+  provincia:
+    - provincia
+    - prov
+    - province
+    - siglla_provincia
+
+  country:
+    - country
+    - nazione
+    - stato
+    - nation
 
   telefono:
     - telefono
@@ -107,6 +120,9 @@ pii_columns:
     - passaporto
     - numero_documento
     - tipo_documento
+    - document_number
+    - document_nr
+    - doc_number
     - rilasciato_da
     - data_scadenza_doc
     - data_rilascio_doc
