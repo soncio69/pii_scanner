@@ -286,3 +286,39 @@ pii_columns:
     - nif
     - numero_identificazione_fiscale
     - tax_id
+
+  # ============ Client/Beneficiary fields ============
+  cliente:
+    - client
+    - cliente
+
+  nome_colonna:
+    - _name
+
+  beneficiario:
+    - beneficiary
+    - beneficiario
+
+  esecutore:
+    - executor
+    - esecutore
+
+  domicilio:
+    - domicilio
+    - dom_interno
+
+  cro:
+    - cro
+
+  titolare:
+    - holder
+    - titolare
+    - intestatario
+
+  dossier:
+    - dossier
+    - fascicolo
+
+  controparte:
+    - controparte
+    - contropartita

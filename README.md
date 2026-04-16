@@ -5,7 +5,7 @@ A tool that scans multiple Oracle database schemas to identify columns containin
 ## Features
 
 - **Hybrid Detection**: Combines three detection methods for comprehensive PII identification
-- **Smart Filtering**: Automatically excludes numeric PK/FK ID columns from PII detection
+- **Smart Filtering**: Automatically excludes date, blob, and numeric ID columns from PII detection
 - **Italian Banking Focus**: Pre-configured patterns for Italian PII types (codice fiscale, NDG, IBAN, etc.)
 - **Excel Output**: Results exported to Excel for easy review and reporting
 - **Flexible**: Enable/disable LLM and pattern detection independently
@@ -124,6 +124,9 @@ Edit `config/column_mappings.yaml` to customize PII detection patterns. The file
 - **Cards**: carta_di_credito, bancomat
 - **Financial**: BIC/SWIFT
 - **Contract/Policy**: numero_polizza, numero_contratto
+- **Client/Beneficiary**: cliente, beneficiario, esecutore, titolare, dossier, controparte
+
+The scanner also detects columns ending with `_NAME` (e.g., CLIENT_NAME, USER_NAME).
 
 ## Output
 
@@ -139,7 +142,15 @@ The scanner generates an Excel report with columns:
 
 ### Smart Filtering
 
-The scanner automatically excludes numeric ID columns that are primary or foreign keys from PII detection. This prevents false positives on system-generated identifiers like `ID`, `ID_CLIENTE`, or `ID_CONTRATTO` that serve as database keys rather than actual PII.
+The scanner automatically excludes certain columns from PII detection:
+
+**Excluded Column Types:**
+- **Date/Time columns**: DATE, TIMESTAMP, TIMESTAMP WITH TIME ZONE, etc.
+- **Binary columns**: BLOB, CLOB, NCLOB, LONG RAW, etc.
+- **Numeric columns ending with "_ID"**: Any numeric column ending in `_ID` (e.g., `USER_ID`, `CUSTOMER_ID`)
+- **Specific column names**: EXIT_CODE, JOB_NAME, JOB_KEY, STEP_NAME, READ_COUNT, READ_SKIP_COUNT, KEY, BARCODE, MANDATO, MANDATE, CREATION_DATE, CREATED_BY
+
+This prevents false positives on system-generated identifiers like `ID`, `ID_CLIENTE`, or `ID_CONTRATTO` that serve as database keys rather than actual PII.
 
 ## Requirements
 

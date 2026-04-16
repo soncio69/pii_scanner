@@ -7,7 +7,7 @@ import logging
 from src.database.oracle_connector import OracleConnector, build_dsn
 from src.database.metadata_fetcher import MetadataFetcher
 from src.database.credentials import load_credentials
-from src.detectors.hybrid_detector import HybridDetector, PiiFinding
+from src.detectors.hybrid_detector import HybridDetector, PiiFinding, DATE_TYPES, BLOB_TYPES
 from src.detectors.llm_detector import OllamaConnectionError
 
 
@@ -111,8 +111,15 @@ class Scanner:
 
                 # Scan each table
                 for table in tables:
-                    # First, mark all columns as NOT_PII
+                    # First, mark all columns as NOT_PII (excluding date/blob columns)
                     for col in table.columns:
+                        # Skip date/time columns
+                        if col.data_type.upper() in DATE_TYPES:
+                            continue
+                        # Skip blob columns
+                        if col.data_type.upper() in BLOB_TYPES:
+                            continue
+
                         # Format data type with length for varchar2
                         if col.data_type.upper() in ('VARCHAR2', 'CHAR', 'NVARCHAR2', 'NCHAR'):
                             dtype = f"{col.data_type}({col.data_length})"
