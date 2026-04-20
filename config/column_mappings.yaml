@@ -322,3 +322,15 @@ pii_columns:
   controparte:
     - controparte
     - contropartita
+
+  # ============ Mandato/Intestazione ============
+  mandato:
+    - mandato
+    - id_mandato
+    - numero_mandato
+    - codice_mandato
+
+  intestazione:
+    - intestazione
+    - nome_intestazione
+    - causale

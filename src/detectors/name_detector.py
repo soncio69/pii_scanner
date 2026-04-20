@@ -15,6 +15,13 @@ class PiiMatch:
 class NameDetector:
     """Detect PII based on column names (Italian + English)"""
 
+    # Column name substrings to exclude from PII detection
+    EXCLUDED_PATTERNS = [
+        "file", "flusso", "modulo", "batch", "scatola", "container",
+        "barcode", "stato", "status", "_filenet", "menu", "cartella",
+        "icona", "note", "notes"
+    ]
+
     def __init__(self):
         self.mappings = get_column_mappings()
         self.pii_columns = self.mappings.get("pii_columns", {})
@@ -25,6 +32,14 @@ class NameDetector:
 
         for col in columns:
             col_name_lower = col.name.lower()
+
+            # Skip columns matching exclusion patterns
+            if any(excl in col_name_lower for excl in self.EXCLUDED_PATTERNS):
+                continue
+
+            # Skip columns containing "ID" that are PK or FK (technical keys, not PII)
+            if "id" in col_name_lower and (col.is_pk or col.is_fk):
+                continue
 
             # Skip VARCHAR2 columns with length <= 5 (too short for PII)
             if col.data_type.upper() in ('VARCHAR2', 'CHAR', 'NVARCHAR2', 'NCHAR'):

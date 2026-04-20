@@ -21,6 +21,8 @@ class ColumnInfo:
     data_type: str
     data_length: int | None
     nullable: bool
+    is_pk: bool = False
+    is_fk: bool = False
 
 
 @dataclass
@@ -147,18 +149,27 @@ class MetadataFetcher:
 
         # Get PK/FK columns and add to tables
         # This is needed to filter out numeric ID columns that are keys
-        pk_fk_columns = self._get_pk_fk_columns(owner)
+        pk_columns, fk_columns = self._get_pk_fk_columns(owner)
         for table in tables.values():
-            table.pk_fk_columns = pk_fk_columns.get(table.name, set())
+            pk_cols = pk_columns.get(table.name, set())
+            fk_cols = fk_columns.get(table.name, set())
+            table.pk_fk_columns = pk_cols | fk_cols
+            # Mark columns as PK/FK
+            for col in table.columns:
+                if col.name in pk_cols:
+                    col.is_pk = True
+                if col.name in fk_cols:
+                    col.is_fk = True
 
         return list(tables.values())
 
-    def _get_pk_fk_columns(self, owner: str) -> dict:
+    def _get_pk_fk_columns(self, owner: str) -> tuple[dict, dict]:
         """
         Get columns that are part of primary or foreign keys.
 
         Returns:
-            Dict mapping table_name -> set of column names that are PK or FK
+            Tuple of (pk_columns dict, fk_columns dict)
+            Each dict maps table_name -> set of column names
         """
         cursor = self.conn.cursor()
 
@@ -182,26 +193,27 @@ class MetadataFetcher:
                 AND ac.constraint_type = 'R'
         """
 
-        result = {}
+        pk_result = {}
+        fk_result = {}
 
         try:
             cursor.execute(pk_query, {"owner": owner.upper()})
             for table_name, col_name in cursor.fetchall():
-                if table_name not in result:
-                    result[table_name] = set()
-                result[table_name].add(col_name)
+                if table_name not in pk_result:
+                    pk_result[table_name] = set()
+                pk_result[table_name].add(col_name)
 
             cursor.execute(fk_query, {"owner": owner.upper()})
             for table_name, col_name in cursor.fetchall():
-                if table_name not in result:
-                    result[table_name] = set()
-                result[table_name].add(col_name)
+                if table_name not in fk_result:
+                    fk_result[table_name] = set()
+                fk_result[table_name].add(col_name)
         except oracledb.Error as e:
             logger.warning(f"Cannot get PK/FK columns: {str(e)}")
         finally:
             cursor.close()
 
-        return result
+        return pk_result, fk_result
 
     def sample_rows(self, owner: str, table_name: str, limit: int = 10) -> List[dict]:
         """Sample random rows from a table for LLM analysis"""
