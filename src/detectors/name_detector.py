@@ -17,7 +17,7 @@ class NameDetector:
 
     # Column name substrings to exclude from PII detection
     EXCLUDED_PATTERNS = [
-        "file", "flusso", "modulo", "batch", "scatola", "container",
+        "file", "flusso", "modulo", "batch", "flag", "scatola", "container",
         "barcode", "stato", "status", "_filenet", "menu", "cartella",
         "icona", "note", "notes"
     ]

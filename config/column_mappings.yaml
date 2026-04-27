@@ -334,3 +334,47 @@ pii_columns:
     - intestazione
     - nome_intestazione
     - causale
+
+  # ============ Communication/Message Fields ============
+  subject:
+    - subject
+    - oggetto
+    - titolo
+    - title
+
+  sender:
+    - sender
+    - mittente
+    - da
+    - from
+
+  recipients:
+    - recipients
+    - recipients_to
+    - destinatari
+    - destinatario
+    - a
+
+  recipients_cc:
+    - recipients_cc
+    - cc
+    - carbon_copy
+    - con_copia
+
+  presso:
+    - presso
+    - indirizzopresso
+    - presso_domicilio
+
+  location:
+    - location
+    - localita
+    - localizzazione
+    - luogo
+    - sede
+
+  ordering:
+    - ordering
+    - ordine
+    - sequence
+    - sequenza
