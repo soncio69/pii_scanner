@@ -3,6 +3,7 @@ from typing import List, Set
 from dataclasses import dataclass
 from tqdm import tqdm
 import logging
+import time
 
 from src.database.oracle_connector import OracleConnector, build_dsn
 from src.database.metadata_fetcher import MetadataFetcher
@@ -135,7 +136,11 @@ class Scanner:
                         ))
 
                     # Then, detect PII and update results
+                    start_time = time.time()
                     table_findings = detector.detect(schema=user, table=table)
+                    elapsed = time.time() - start_time
+
+                    logger.debug(f"Scanned {user}.{table.name}: {elapsed:.2f}s, {len(table_findings)} PII findings")
 
                     for finding in table_findings:
                         pii_columns.add((user.upper(), table.name, finding.column))
