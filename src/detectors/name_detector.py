@@ -21,7 +21,7 @@ class NameDetector:
         "barcode", "stato", "status", "_filenet", "menu", "cartella",
         "icona", "note", "notes", "distinta", "filiale", "importo", "tasso",
         "commissioni", "gg", "esito", "errore", "tabulato", "abi",
-        "is_", "has_", "quantita", "qta"
+        "is_", "has_", "quantita", "qta", "categoria", "effetto", "return_code", "cab"
     ]
 
     # Column name prefixes to exclude from PII detection

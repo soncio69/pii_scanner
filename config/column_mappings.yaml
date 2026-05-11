@@ -49,6 +49,7 @@ pii_columns:
     - indirizzo_residenza
     - indirizzo_domicilio
     - indirizzo_comunicazione
+    - civico
 
   città:
     - città
@@ -154,19 +155,19 @@ pii_columns:
     - reference
     - riferimento
 
-  # ABI - Bank code
-  abi:
-    - abi
-    - codice_abi
-    - bank_code
+  # ABI - Bank code (EXCLUDED from PII)
+  # abi:
+  #   - abi
+  #   - codice_abi
+  #   - bank_code
 
-  # CAB - Branch code
-  cab:
-    - cab
-    - codice_cab
-    - branch_code
-    - agenzia
-    - codice_agenzia
+  # CAB - Branch code (EXCLUDED from PII)
+  # cab:
+  #   - cab
+  #   - codice_cab
+  #   - branch_code
+  #   - agenzia
+  #   - codice_agenzia
 
   # ============ Account Numbers ============
   iban:

@@ -28,7 +28,7 @@ EXCLUDED_COLUMNS = {
     'NOTE', 'FILE', 'FLUSSO', 'MODULO', 'BATCH', 'SCATOLA', 'STATO', 'STATUS',
     'DISTINTA', 'FILIALE', 'IMPORTO', 'TASSO', 'COMMISSIONI', 'GG', 'ESITO',
     'ERRORE', 'TABULATO', 'ABI', 'IS_', 'HAS_', 'MENU', 'CARTELLA', 'ICONA',
-    'NOTES', 'QUANTITA', 'QTA'
+    'NOTES', 'QUANTITA', 'QTA', 'CATEGORIA', 'EFFETTO', 'RETURN_CODE', 'CAB'
 }
 
 # Column name prefixes to exclude from PII detection
