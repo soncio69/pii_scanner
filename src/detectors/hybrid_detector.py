@@ -24,8 +24,15 @@ BLOB_TYPES = {'BLOB', 'CLOB', 'NCLOB', 'LONG RAW', 'RAW', 'RAW(16)', 'BINARY FIL
 # Specific column names to exclude from PII detection
 EXCLUDED_COLUMNS = {
     'EXIT_CODE', 'JOB_NAME', 'JOB_KEY', 'STEP_NAME', 'READ_COUNT', 'READ_SKIP_COUNT',
-    'KEY', 'BARCODE', 'MANDATO', 'MANDATE', 'CREATION_DATE', 'CREATED_BY'
+    'KEY', 'BARCODE', 'MANDATO', 'MANDATE', 'CREATION_DATE', 'CREATED_BY',
+    'NOTE', 'FILE', 'FLUSSO', 'MODULO', 'BATCH', 'SCATOLA', 'STATO', 'STATUS',
+    'DISTINTA', 'FILIALE', 'IMPORTO', 'TASSO', 'COMMISSIONI', 'GG', 'ESITO',
+    'ERRORE', 'TABULATO', 'ABI', 'IS_', 'HAS_', 'MENU', 'CARTELLA', 'ICONA',
+    'NOTES', 'QUANTITA', 'QTA'
 }
+
+# Column name prefixes to exclude from PII detection
+EXCLUDED_PREFIXES = ['DATA']
 
 
 @dataclass
@@ -216,6 +223,9 @@ class HybridDetector:
             col_name_upper = f.column.upper().strip()
             if col_name_upper in EXCLUDED_COLUMNS:
                 logger.debug(f"Excluding column {f.column} (excluded name)")
+                continue
+            if any(col_name_upper.startswith(pref) for pref in EXCLUDED_PREFIXES):
+                logger.debug(f"Excluding column {f.column} (excluded prefix)")
                 continue
             filtered.append(f)
         return filtered

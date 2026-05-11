@@ -19,8 +19,13 @@ class NameDetector:
     EXCLUDED_PATTERNS = [
         "file", "flusso", "modulo", "batch", "flag", "scatola", "container",
         "barcode", "stato", "status", "_filenet", "menu", "cartella",
-        "icona", "note", "notes"
+        "icona", "note", "notes", "distinta", "filiale", "importo", "tasso",
+        "commissioni", "gg", "esito", "errore", "tabulato", "abi",
+        "is_", "has_", "quantita", "qta"
     ]
+
+    # Column name prefixes to exclude from PII detection
+    EXCLUDED_PREFIXES = ["data"]
 
     def __init__(self):
         self.mappings = get_column_mappings()
@@ -35,6 +40,10 @@ class NameDetector:
 
             # Skip columns matching exclusion patterns
             if any(excl in col_name_lower for excl in self.EXCLUDED_PATTERNS):
+                continue
+
+            # Skip columns matching exclusion prefixes
+            if any(col_name_lower.startswith(pref) for pref in self.EXCLUDED_PREFIXES):
                 continue
 
             # Skip columns containing "ID" that are PK or FK (technical keys, not PII)
