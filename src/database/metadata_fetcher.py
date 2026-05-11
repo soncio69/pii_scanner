@@ -236,6 +236,10 @@ class MetadataFetcher:
         except oracledb.Error as e:
             logger.warning(f"Cannot sample {owner}.{table_name}: {str(e)}", exc_info=True)
             return []
+        except ValueError as e:
+            # Handle invalid data types (e.g., invalid dates like year -2)
+            logger.warning(f"Cannot sample {owner}.{table_name}: {str(e)}", exc_info=True)
+            return []
         finally:
             cursor.close()
 
